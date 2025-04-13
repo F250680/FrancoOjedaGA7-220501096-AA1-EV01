@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Versionamiento Local vs. Remoto</title>
+  <style>
+    :root {
+      --primary-color: #2e3440;
+      --secondary-color: #5e81ac;
+      --accent-color: #88c0d0;
+      --success-color: #a3be8c;
+      --warning-color: #ebcb8b;
+      --danger-color: #bf616a;
+      --light-bg: #eceff4;
+      --dark-bg: #3b4252;
+      --text-light: #eceff4;
+      --text-dark: #2e3440;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-dark);
+      background-color: var(--light-bg);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-bg) 100%);
+      color: var(--text-light);
+      text-align: center;
+      padding: 2rem 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+      margin: 1.5rem 0;
+      color: var(--secondary-color);
+      border-bottom: 3px solid var(--accent-color);
+      padding-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.8rem;
+      margin: 1.5rem 0 1rem;
+      color: var(--primary-color);
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    .section {
+      background-color: white;
+      border-radius: 10px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .intro p {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .comparison-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .comparison-box {
+      flex: 1 1 400px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-top: 5px solid;
+    }
+
+    .comparison-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .local {
+      border-color: var(--success-color);
+    }
+
+    .remote {
+      border-color: var(--secondary-color);
+    }
+
+    .comparison-box h3 {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .icon {
+      font-size: 2rem;
+      margin-right: 0.5rem;
+    }
+
+    .feature-list {
+      list-style-type: none;
+      margin-top: 1.5rem;
+    }
+
+    .feature-list li {
+      position: relative;
+      padding: 0.5rem 0 0.5rem 2rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+
+    .workflow-section {
+      margin: 3rem 0;
+    }
+
+    .workflow-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .workflow-steps {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .step {
+      display: flex;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .step:not(:last-child):after {
+      content: "";
+      position: absolute;
+      left: 1.5rem;
+      top: 3rem;
+      height: calc(100% - 1rem);
+      width: 2px;
+      background-color: var(--accent-color);
+    }
+
+    .step-number {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background-color: var(--secondary-color);
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--secondary-color);
+    }
+
+    .table-section {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 2rem 0;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+
+    .pros-cons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .pros, .cons {
+      flex: 1 1 400px;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+
+    .pros {
+      background-color: rgba(163, 190, 140, 0.1);
+      border-left: 5px solid var(--success-color);
+    }
+
+    .cons {
+      background-color: rgba(191, 97, 106, 0.1);
+      border-left: 5px solid var(--danger-color);
+    }
+
+    .pros h4, .cons h4 {
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .pros h4:before {
+      content: "✓";
+      margin-right: 0.5rem;
+      color: var(--success-color);
+      font-weight: bold;
+    }
+
+    .cons h4:before {
+      content: "✗";
+      margin-right: 0.5rem;
+      color: var(--danger-color);
+      font-weight: bold;
+    }
+
+    .graphics-section {
+      margin: 3rem 0;
+    }
+
+    .graphics-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .graphic {
+      flex: 1 1 45%;
+      min-width: 300px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .graphic-title {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--secondary-color);
+    }
+
+    .graphic-svg {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+    }
+
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .card {
+      flex: 1 1 300px;
+      background-color: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: var(--secondary-color);
+    }
+
+    .conclusion {
+      background-color: var(--primary-color);
+      color: var(--text-light);
+      padding: 2rem;
+      border-radius: 10px;
+      margin-top: 3rem;
+    }
+
+    .conclusion h2 {
+      color: white;
+      border-bottom-color: var(--accent-color);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+    }
+
+    .highlight {
+      background-color: rgba(136, 192, 208, 0.2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-weight: bold;
+      color: var(--secondary-color);
+    }
+
+    .command {
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      font-family: 'Courier New', Courier, monospace;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .workflow-container {
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Versionamiento Local vs. Remoto</h1>
+  <p class="subtitle">Una comparación detallada con ejemplos visuales</p>
+</header>
+
+<div class="container">
+  <section class="section intro">
+    <h2>Introducción al Control de Versiones</h2>
+    <p>El control de versiones es un sistema que registra los cambios realizados sobre un archivo o conjunto de archivos a lo largo del tiempo, de modo que puedas recuperar versiones específicas más adelante. Es esencial para el desarrollo de software moderno y la colaboración entre equipos.</p>
+    <p>Existen dos tipos principales de sistemas de control de versiones: <span class="highlight">locales</span> y <span class="highlight">remotos</span>. Aunque ambos cumplen la función básica de rastrear cambios, difieren significativamente en su enfoque, capacidades y casos de uso.</p>
+  </section>
+
+  <section class="section">
+    <h2>Conceptos Clave</h2>
+
+    <div class="comparison-container">
+      <div class="comparison-box local">
+        <h3><span class="icon">🖥️</span>Versionamiento Local</h3>
+        <p>Un sistema de control de versiones local mantiene una base de datos de cambios en tu propio ordenador. Todos los repositorios, históricos y metadatos se almacenan localmente sin necesidad de conexión a internet.</p>
+        <ul class="feature-list">
+          <li>Funciona sin conexión a internet</li>
+          <li>Mayor velocidad al no depender de la red</li>
+          <li>Control completo y privacidad del código</li>
+          <li>No facilita la colaboración directa</li>
+          <li>Mayor riesgo de pérdida de datos</li>
+        </ul>
+      </div>
+
+      <div class="comparison-box remote">
+        <h3><span class="icon">☁️</span>Versionamiento Remoto</h3>
+        <p>Un sistema de control de versiones remoto almacena el repositorio en un servidor externo, permitiendo que múltiples desarrolladores trabajen en el mismo proyecto simultáneamente, compartiendo cambios entre sí.</p>
+        <ul class="feature-list">
+          <li>Facilita la colaboración entre equipos</li>
+          <li>Proporciona copias de seguridad automáticas</li>
+          <li>Permite revisión de código y flujos de trabajo</li>
+          <li>Requiere conexión a internet para sincronizar</li>
+          <li>Posibles problemas de rendimiento en redes lentas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section graphics-section">
+    <h2>Representación Visual de los Flujos de Trabajo</h2>
+
+    <div class="graphics-container">
+      <div class="graphic">
+        <h3 class="graphic-title">Flujo de Trabajo Local</h3>
+        <svg class="graphic-svg" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- Fondo del área de trabajo -->
+          <rect x="50" y="50" width="700" height="300" rx="20" fill="#f0f0f0" stroke="#cccccc" stroke-width="2"/>
+
+          <!-- Título del área de trabajo -->
+          <text x="400" y="30" text-anchor="middle" font-family="Arial" font-size="20" font-weight="bold" fill="#2e3440">Sistema de Control de Versiones Local</text>
+
+          <!-- Computadora local -->
+          <rect x="100" y="100" width="600" height="200" rx="10" fill="#ffffff" stroke="#5e81ac" stroke-width="3"/>
+
+          <!-- Working Directory -->
+          <rect x="150" y="150" width="120" height="100" rx="5" fill="#ebcb8b" stroke="#d08770" stroke-width="2"/>
+          <text x="210" y="140" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#2e3440">Directorio de Trabajo</text>
+
+          <!-- Staging Area -->
+          <rect x="350" y="150" width="120" height="100" rx="5" fill="#a3be8c" stroke="#8fbcbb" stroke-width="2"/>
+          <text x="410" y="140" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#2e3440">Área de Preparación</text>
+
+          <!-- Local Repository -->
+          <rect x="550" y="150" width="120" height="100" rx="5" fill="#5e81ac" stroke="#81a1c1" stroke-width="2"/>
+          <text x="610" y="140" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#2e3440">Repositorio Local</text>
+
+          <!-- Arrows -->
+          <path d="M 270 200 L 350 200" fill="none" stroke="#2e3440" stroke-width="2" stroke-dasharray="5,5"/>
+          <polygon points="345,195 355,200 345,205" fill="#2e3440"/>
+          <text x="310" y="190" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">git add</text>
+
+          <path d="M 470 200 L 550 200" fill="none" stroke="#2e3440" stroke-width="2" stroke-dasharray="5,5"/>
+          <polygon points="545,195 555,200 545,205" fill="#2e3440"/>
+          <text x="510" y="190" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">git commit</text>
+
+          <!-- Etiqueta de Sistema Local -->
+          <text x="400" y="310" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="#2e3440">Todo en un solo equipo</text>
+        </svg>
+      </div>
+
+      <div class="graphic">
+        <h3 class="graphic-title">Flujo de Trabajo Remoto</h3>
+        <svg class="graphic-svg" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+          <!-- Fondo del área de trabajo -->
+          <rect x="50" y="50" width="700" height="300" rx="20" fill="#f0f0f0" stroke="#cccccc" stroke-width="2"/>
+
+          <!-- Título del área de trabajo -->
+          <text x="400" y="30" text-anchor="middle" font-family="Arial" font-size="20" font-weight="bold" fill="#2e3440">Sistema de Control de Versiones Remoto</text>
+
+          <!-- Computadora local -->
+          <rect x="100" y="130" width="300" height="170" rx="10" fill="#ffffff" stroke="#5e81ac" stroke-width="3"/>
+          <text x="250" y="120" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#2e3440">Equipo Local</text>
+
+          <!-- Servidor remoto -->
+          <rect x="500" y="130" width="200" height="170" rx="10" fill="#ffffff" stroke="#bf616a" stroke-width="3"/>
+          <text x="600" y="120" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#2e3440">Servidor Remoto</text>
+
+          <!-- Working Directory -->
+          <rect x="120" y="170" width="80" height="80" rx="5" fill="#ebcb8b" stroke="#d08770" stroke-width="2"/>
+          <text x="160" y="165" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">Directorio</text>
+
+          <!-- Staging Area -->
+          <rect x="220" y="170" width="80" height="80" rx="5" fill="#a3be8c" stroke="#8fbcbb" stroke-width="2"/>
+          <text x="260" y="165" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">Staging</text>
+
+          <!-- Local Repository -->
+          <rect x="320" y="170" width="60" height="80" rx="5" fill="#5e81ac" stroke="#81a1c1" stroke-width="2"/>
+          <text x="350" y="165" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">Local</text>
+
+          <!-- Remote Repository -->
+          <rect x="520" y="170" width="160" height="80" rx="5" fill="#b48ead" stroke="#d8a9ce" stroke-width="2"/>
+          <text x="600" y="165" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">Repositorio Remoto</text>
+
+          <!-- Arrows -->
+          <path d="M 200 210 L 220 210" fill="none" stroke="#2e3440" stroke-width="2"/>
+          <polygon points="215,205 225,210 215,215" fill="#2e3440"/>
+          <text x="210" y="200" text-anchor="middle" font-family="Arial" font-size="10" fill="#2e3440">add</text>
+
+          <path d="M 300 210 L 320 210" fill="none" stroke="#2e3440" stroke-width="2"/>
+          <polygon points="315,205 325,210 315,215" fill="#2e3440"/>
+          <text x="310" y="200" text-anchor="middle" font-family="Arial" font-size="10" fill="#2e3440">commit</text>
+
+          <path d="M 380 190 L 520 190" fill="none" stroke="#2e3440" stroke-width="2"/>
+          <polygon points="515,185 525,190 515,195" fill="#2e3440"/>
+          <text x="450" y="180" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">push</text>
+
+          <path d="M 520 230 L 380 230" fill="none" stroke="#2e3440" stroke-width="2"/>
+          <polygon points="385,235 375,230 385,225" fill="#2e3440"/>
+          <text x="450" y="250" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">pull / fetch</text>
+
+          <!-- Usuario adicional -->
+          <rect x="520" y="300" width="60" height="30" rx="15" fill="#88c0d0" stroke="#81a1c1" stroke-width="2"/>
+          <text x="550" y="320" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">Usuario B</text>
+
+          <path d="M 550 300 L 550 260" fill="none" stroke="#2e3440" stroke-width="2" stroke-dasharray="5,5"/>
+          <polygon points="545,265 550,255 555,265" fill="#2e3440"/>
+
+          <rect x="600" y="300" width="60" height="30" rx="15" fill="#88c0d0" stroke="#81a1c1" stroke-width="2"/>
+          <text x="630" y="320" text-anchor="middle" font-family="Arial" font-size="12" fill="#2e3440">Usuario C</text>
+
+          <path d="M 630 300 L 630 260" fill="none" stroke="#2e3440" stroke-width="2" stroke-dasharray="5,5"/>
+          <polygon points="625,265 630,255 635,265" fill="#2e3440"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="section workflow-section">
+    <h2>Flujos de Trabajo Típicos</h2>
+
+    <div class="workflow-container">
+      <div class="workflow-steps">
+        <h3>Versionamiento Local</h3>
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-title">Inicializar Repositorio</div>
+            <p>Creas un repositorio local con <span class="command">git init</span> en tu directorio de trabajo.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-title">Realizar Cambios</div>
+            <p>Modificas archivos en tu directorio de trabajo.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-title">Preparar Cambios</div>
+            <p>Añades los cambios al área de preparación con <span class="command">git add</span>.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-title">Confirmar Cambios</div>
+            <p>Creas un commit con <span class="command">git commit</span> para guardar los cambios en el repositorio local.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <div class="step-title">Revisar Historial</div>
+            <p>Revisas el historial de cambios con <span class="command">git log</span>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-steps">
+        <h3>Versionamiento Remoto</h3>
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-title">Clonar Repositorio</div>
+            <p>Clonas un repositorio remoto con <span class="command">git clone</span> para obtener una copia local.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-title">Actualizar Repositorio</div>
+            <p>Obtienes los últimos cambios con <span class="command">git pull</span> antes de comenzar a trabajar.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-title">Realizar y Confirmar Cambios</div>
+            <p>Realizas cambios, los añades con <span class="command">git add</span> y confirmas con <span class="command">git commit</span>.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-title">Enviar al Repositorio Remoto</div>
+            <p>Subes tus commits al servidor remoto con <span class="command">git push</span>.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <div class="step-title">Colaborar</div>
+            <p>Otros desarrolladores pueden ver tus cambios, revisar código o crear ramas para nuevas características.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section table-section">
+    <h2>Comparación Detallada</h2>
+
+    <table>
+      <tr>
+        <th>Característica</th>
+        <th>Versionamiento Local</th>
+        <th>Versionamiento Remoto</th>
+      </tr>
+      <tr>
+        <td>Ubicación del repositorio</td>
+        <td>Solo en el ordenador local</td>
+        <td>En un servidor remoto con copias locales</td>
+      </tr>
+      <tr>
+        <td>Colaboración</td>
+        <td>Limitada, requiere intercambio manual de archivos</td>
+        <td>Nativa y fluida entre múltiples desarrolladores</td>
+      </tr>
+      <tr>
+        <td>Dependencia de internet</td>
+        <td>No requiere conexión</td>
+        <td>Necesaria para sincronizar (push/pull)</td>
+      </tr>
+      <tr>
+        <td>Respaldo de datos</td>
+        <td>Vulnerable a fallos del disco local</td>
+        <td>Copias distribuidas en múltiples ubicaciones</td>
+      </tr>
+      <tr>
+        <td>Facilidad de configuración</td>
+        <td>Muy sencilla</td>
+        <td>Requiere configuración adicional</td>
+      </tr>
+      <tr>
+        <td>Gestión de conflictos</td>
+        <td>Poco común (trabajo individual)</td>
+        <td>Mecanismos integrados para resolver conflictos</td>
+      </tr>
+      <tr>
