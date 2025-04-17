@@ -1,34 +1,480 @@
-<!doctype html>
-<html class="no-js" lang="">
-
+<!DOCTYPE html>
+<html lang="es">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
-  <link rel="stylesheet" href="css/style.css">
-  <meta name="description" content="">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instrumento de Evaluación - Control de Versiones</title>
+  <style>
+    /* Variables para colores y tamaños */
+    :root {
+      --primary-color: #2056a1;
+      --secondary-color: #3498db;
+      --accent-color: #1abc9c;
+      --text-color: #333;
+      --light-bg: #f8f9fa;
+      --white: #ffffff;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --border-radius: 10px;
+    }
 
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-  <meta property="og:image:alt" content="">
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.png">
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      background-color: var(--light-bg);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+      overflow-x: hidden;
+    }
 
-  <link rel="manifest" href="site.webmanifest">
-  <meta name="theme-color" content="#fafafa">
+    header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--white);
+      padding: 25px 0;
+      text-align: center;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    header::after {
+      content: "";
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0));
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 15px;
+      background-color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+
+    .logo img {
+      max-width: 60px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 15px;
+    }
+
+    .card {
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      margin-bottom: 40px;
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    h2 {
+      color: var(--primary-color);
+      border-bottom: 2px solid var(--secondary-color);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    h3 {
+      color: var(--secondary-color);
+      margin: 20px 0 15px;
+      font-size: 1.4rem;
+    }
+
+    .datos-generales {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .datos-item {
+      margin-bottom: 20px;
+      padding: 12px;
+      background-color: var(--light-bg);
+      border-radius: var(--border-radius);
+      transition: all 0.3s ease;
+    }
+
+    .datos-item:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .datos-item strong {
+      color: var(--primary-color);
+      display: block;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
+    .datos-item span {
+      display: block;
+      line-height: 1.4;
+    }
+
+    .criterios {
+      padding-left: 25px;
+      margin: 20px 0;
+    }
+
+    .criterios li {
+      margin-bottom: 15px;
+      position: relative;
+      padding-left: 10px;
+    }
+
+    .criterios li::before {
+      content: "•";
+      color: var(--accent-color);
+      font-weight: bold;
+      font-size: 1.2rem;
+      position: absolute;
+      left: -15px;
+    }
+
+    /* Tabla responsiva */
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    table, th, td {
+      border: 1px solid #e0e0e0;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--secondary-color);
+      color: var(--white);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(52, 152, 219, 0.05);
+    }
+
+    tr:hover {
+      background-color: rgba(26, 188, 156, 0.1);
+    }
+
+    .author-info {
+      text-align: center;
+      margin: 40px 0;
+      padding: 20px;
+      background-color: var(--white);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+    }
+
+    .author-info h3 {
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .author-info p {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--secondary-color);
+    }
+
+    .footer {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      color: var(--white);
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 50px;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+    }
+
+    .footer p {
+      margin: 8px 0;
+    }
+
+    /* Mejoras de accesibilidad y responsividad */
+    @media (max-width: 768px) {
+      .container {
+        width: 95%;
+        padding: 15px 10px;
+      }
+
+      .card {
+        padding: 20px 15px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      h3 {
+        font-size: 1.3rem;
+      }
+
+      .datos-item strong {
+        font-size: 1rem;
+      }
+    }
+
+    /* Checkbox estilizado para la tabla */
+    .checkbox-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .custom-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--secondary-color);
+      border-radius: 4px;
+      margin: 0 auto;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .custom-checkbox.checked::after {
+      content: "✓";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .evaluation-field {
+      border-bottom: 2px dashed var(--secondary-color);
+      padding: 10px 5px;
+      margin: 10px 0;
+      width: 100%;
+    }
+
+    /* Animaciones */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .author-info {
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .card:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  </style>
 </head>
-
 <body>
+<header>
+  <div class="container">
+    <div class="logo">
+      <img src="/api/placeholder/80/80" alt="SENA Logo">
+    </div>
+    <h1>INSTRUMENTO DE EVALUACIÓN</h1>
+    <p>Configuración de Herramientas de Versionamiento para Control de Código</p>
+  </div>
+</header>
 
-  <!-- Add your site or application content here -->
-  <p>Hello world! This is HTML5 Boilerplate.</p>
-  <script src="js/app.js"></script>
+<div class="container">
+  <div class="author-info">
+    <h3>Trabajo realizado por:</h3>
+    <p>Franco Fernando Ojeda Insuasty</p>
+  </div>
 
+  <div class="card">
+    <h2>1. DATOS GENERALES</h2>
+    <div class="datos-generales">
+      <div class="datos-item">
+        <strong>Programa de formación:</strong>
+        <span>Análisis y desarrollo de software</span>
+      </div>
+      <div class="datos-item">
+        <strong>Proyecto formativo:</strong>
+        <span>Construcción de software integrador de tecnologías orientadas a servicios</span>
+      </div>
+      <div class="datos-item">
+        <strong>Fase proyecto:</strong>
+        <span>Ejecución</span>
+      </div>
+      <div class="datos-item">
+        <strong>Resultado de aprendizaje:</strong>
+        <span>220501096-01 Planear actividades de construcción del software de acuerdo con el diseño establecido</span>
+      </div>
+      <div class="datos-item">
+        <strong>Actividad de aprendizaje:</strong>
+        <span>GA7-220501096-AA1- Configurar herramientas de versionamiento para control de código</span>
+      </div>
+      <div class="datos-item">
+        <strong>Evidencia de conocimiento:</strong>
+        <span>Informe técnico de plan de trabajo para construcción de software. GA7-220501096-AA1-EV01</span>
+      </div>
+    </div>
+
+    <h3>Criterios de evaluación:</h3>
+    <ul class="criterios">
+      <li>Interpreta el informe de diseño para definir el plan de trabajo en la construcción del software.</li>
+      <li>Selecciona y configura herramientas de desarrollo de acuerdo con las condiciones del software a construir.</li>
+      <li>Define estándares de codificación de acuerdo con las reglas de la plataforma de desarrollo seleccionada.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>2. LISTA DE CHEQUEO</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+        <tr>
+          <th>No.</th>
+          <th>VARIABLES/INDICADORES DE LOGRO</th>
+          <th>PORCENTAJE</th>
+          <th>SI</th>
+          <th>NO</th>
+          <th>Observaciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>1.</td>
+          <td>Diferencia con claridad versionamientos locales y remotos</td>
+          <td>30%</td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>2.</td>
+          <td>Selecciona y describe herramientas de desarrollo a utilizar para la codificación del software.</td>
+          <td>30%</td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>3.</td>
+          <td>Selecciona y describe herramientas de versionamiento</td>
+          <td>30%</td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>4.</td>
+          <td>Presenta el informe cumpliendo con las normas básicas de presentación de documentos.</td>
+          <td>10%</td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td class="checkbox-container">
+            <div class="custom-checkbox" onclick="this.classList.toggle('checked')"></div>
+          </td>
+          <td></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>3. EVALUACIÓN</h2>
+    <div class="datos-item">
+      <strong>Observaciones:</strong>
+      <div class="evaluation-field"></div>
+    </div>
+    <div class="datos-item">
+      <strong>Juicio de valor:</strong>
+      <div class="evaluation-field"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>SENA - Servicio Nacional de Aprendizaje</p>
+    <p>Código de Evidencia: GA7-220501096-AA1-EV01</p>
+    <p>&copy; 2025 - Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<script>
+  // Script para manejar los checkboxes
+  document.addEventListener('DOMContentLoaded', function() {
+    // Asegurarse de que solo un checkbox por fila pueda estar seleccionado
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+      const checkboxes = row.querySelectorAll('.custom-checkbox');
+
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('click', function() {
+          // Desmarcar otros checkboxes en la misma fila
+          checkboxes.forEach(cb => {
+            if (cb !== this) {
+              cb.classList.remove('checked');
+            }
+          });
+        });
+      });
+    });
+  });
+</script>
 </body>
-
 </html>
-
